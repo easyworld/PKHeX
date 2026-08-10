@@ -105,7 +105,7 @@ public abstract class PKM : ISpeciesForm, ITrainerID32, IGeneration, IShiny, ILa
     public abstract int HeldItem { get; set; }
     public abstract byte Gender { get; set; }
     public abstract Nature Nature { get; set; }
-    public virtual Nature StatNature { get => Nature; set => Nature = value; }
+    public virtual Nature StatAlignment { get => Nature; set => Nature = value; }
     public abstract int Ability { get; set; }
     public abstract byte CurrentFriendship { get; set; }
     public abstract byte Form { get; set; }
@@ -300,10 +300,16 @@ public abstract class PKM : ISpeciesForm, ITrainerID32, IGeneration, IShiny, ILa
 
     /// <summary> Maximum length a Trainer Name can be represented as. </summary>
     public abstract int MaxStringLengthTrainer { get; }
+
     /// <summary> Maximum length a Nickname can be represented as. </summary>
     public abstract int MaxStringLengthNickname { get; }
-    /// <summary> Total characters allocated for holding a Trainer Name. </summary>
+
+    /// <summary> Total characters allocated for holding an Original Trainer Name. </summary>
     public abstract int TrashCharCountTrainer { get; }
+
+    /// <summary> Total characters allocated for holding a Handling Trainer Name. </summary>
+    public virtual int TrashCharCountHandler => TrashCharCountTrainer;
+
     /// <summary> Total characters allocated for holding a Nickname. </summary>
     public abstract int TrashCharCountNickname { get; }
 
@@ -522,7 +528,7 @@ public abstract class PKM : ISpeciesForm, ITrainerID32, IGeneration, IShiny, ILa
     /// </summary>
     /// <param name="move">Move ID to add.</param>
     /// <param name="pushOut">If the current moveset is full, whether to push out the oldest move (index 0) to add the new one.</param>
-    /// <returns></returns>
+    /// <returns>True if the move was added, false if not added.</returns>
     public bool AddMove(ushort move, bool pushOut = true)
     {
         if (move == 0 || move >= MaxMoveID || HasMove(move))
@@ -753,8 +759,8 @@ public abstract class PKM : ISpeciesForm, ITrainerID32, IGeneration, IShiny, ILa
         else
             LoadStats(stats, p, level);
 
-        // Amplify stats based on the stat nature.
-        StatNature.ModifyStatsForNature(stats);
+        // Amplify stats based on the stat alignment.
+        StatAlignment.ModifyStatsForAlignment(stats);
     }
 
     private void LoadStats(Span<ushort> stats, IBaseStat p, IHyperTrain t, byte level)
@@ -899,7 +905,7 @@ public abstract class PKM : ISpeciesForm, ITrainerID32, IGeneration, IShiny, ILa
     public virtual void SetShiny()
     {
         var rnd = Util.Rand;
-        do { PID = EntityPID.GetRandomPID(rnd, Species, Gender, Version, Nature, Form, PID); }
+        do PID = EntityPID.GetRandomPID(rnd, Species, Gender, Version, Nature, Form, PID);
         while (!IsShiny);
         if (Format >= 6 && (Gen3 || Gen4 || Gen5))
             EncryptionConstant = PID;
@@ -1034,6 +1040,7 @@ public abstract class PKM : ISpeciesForm, ITrainerID32, IGeneration, IShiny, ILa
     /// Applies all shared properties from the current <see cref="PKM"/> to the <see cref="result"/> <see cref="PKM"/>.
     /// </summary>
     /// <param name="result"><see cref="PKM"/> that receives property values.</param>
+    [RequiresUnreferencedCode("Copies format-specific PKM properties via reflection for unsupported cross-format conversions.")]
     public void TransferPropertiesWithReflection(PKM result)
     {
         // Only transfer declared properties not defined in PKM.cs but in the actual type

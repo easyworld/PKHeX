@@ -14,7 +14,7 @@ public sealed record EncounterStatic8a
     public EntityContext Context => EntityContext.Gen8a;
     private const GameVersion Version = GameVersion.PLA;
     GameVersion IVersion.Version => GameVersion.PLA;
-    public ushort EggLocation => 0;
+    ushort ILocation.EggLocation => 0;
     ushort ILocation.Location => Location;
     public bool IsShiny => Shiny == Shiny.Always;
     public bool IsEgg => false;
@@ -118,7 +118,7 @@ public sealed record EncounterStatic8a
         SetEncounterMoves(pk, pk.MetLevel);
     }
 
-    public void GenerateSeed64(PKM pk, ulong seed)
+    public void GenerateSeed64(PKM pk, ITrainerInfo tr, ulong seed)
     {
         var pa8 = (PA8)pk;
         var criteria = EncounterCriteria.Unrestricted;
@@ -187,7 +187,7 @@ public sealed record EncounterStatic8a
             return false;
         if (pk is IAlphaReadOnly a && a.IsAlpha != IsAlpha)
             return false;
-        if (!IsMatchEggLocation(pk))
+        if (!this.IsMatchEggLocation(pk))
             return false;
         if (!IsMatchLocation(pk))
             return false;
@@ -239,11 +239,6 @@ public sealed record EncounterStatic8a
         return true;
     }
 
-    private bool IsMatchEggLocation(PKM pk)
-    {
-        var expect = pk is PB8 ? Locations.Default8bNone : EggLocation;
-        return pk.EggLocation == expect;
-    }
 
     private bool IsMatchLocation(PKM pk)
     {
@@ -289,18 +284,18 @@ public sealed record EncounterStatic8a
             return true;
 
         const bool allowAlphaPurchaseBug = true; // Everything else Alpha is pre-1.1
-        var level = pk.MetLevel;
+        var metLevel = pk.MetLevel;
         var (learn, mastery) = GetLevelUpInfo();
-        if (!p.IsValidPurchasedEncounter(learn, level, alpha, allowAlphaPurchaseBug))
+        if (!p.IsValidPurchasedEncounter(learn, metLevel, alpha, allowAlphaPurchaseBug))
             return false;
 
         Span<ushort> moves = stackalloc ushort[4];
         if (Moves.HasMoves)
             Moves.CopyTo(moves);
         else
-            learn.SetEncounterMoves(level, moves);
+            learn.SetEncounterMoves(metLevel, moves);
 
-        return p.IsValidMasteredEncounter(moves, learn, mastery, level, alpha, allowAlphaPurchaseBug);
+        return p.IsValidMasteredEncounter(moves, learn, mastery, metLevel, alpha, allowAlphaPurchaseBug);
     }
     #endregion
 

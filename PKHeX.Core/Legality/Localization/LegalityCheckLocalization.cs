@@ -94,13 +94,15 @@ public sealed class LegalityCheckLocalization
     public string EggLocationTrade { get; init; } = "Able to hatch a traded Egg at Met Location.";
     public string EggLocationTradeFail { get; init; } = "Invalid Egg Location, shouldn't be 'traded' while an Egg.";
     public string EggMetLocationFail { get; init; } = "Can't obtain Egg from Egg Location.";
-    public string EggNature { get; init; } = "Eggs cannot have their Stat Nature changed.";
+    public string EggMoveCombination { get; init; } = "These Egg Moves cannot be inherited in combination in this generation.";
+    public string EggNature { get; init; } = "Eggs cannot have their Stat Alignment changed.";
     public string EggPP { get; init; } = "Eggs cannot have modified move PP counts.";
     public string EggPPUp { get; init; } = "Cannot apply PP Ups to an Egg.";
     public string EggRelearnFlags { get; init; } = "Expected no Relearn Move Flags.";
     public string EggShinyPokeStar { get; init; } = "Eggs cannot be a Pokéstar Studios star.";
     public string EggSpecies { get; init; } = "Can't obtain Egg for this species.";
     public string EggUnhatched { get; init; } = "Valid un-hatched Egg.";
+    public string EggBreedChain_0 { get; set; } = "Egg Breed Chain: {0}";
 
     public string EncCondition { get; init; } = "Valid Wild Encounter at location.";
     public string EncConditionBadRNGFrame { get; init; } = "Unable to match encounter conditions to a possible RNG frame.";
@@ -203,6 +205,12 @@ public sealed class LegalityCheckLocalization
     public string G4PartnerMoodZero { get; init; } = "Mood stat value should be zero when not in the player's party.";
     public string G4ShinyLeafBitsInvalid { get; init; } = "Shiny Leaf/Crown bits are not valid.";
     public string G4ShinyLeafBitsEgg { get; init; } = "Eggs cannot have Shiny Leaf/Crown.";
+    public string GTSTrainerSanitizedExpected { get; init; } = "Expected a GTS sanitized trainer name.";
+    public string GTSTrainerSanitized { get; init; } = "Trainer name matches a GTS sanitized trainer name.";
+    public string GTSTradedKoreanInternational { get; init; } = "Traded between Korean and International games via GTS.";
+    public string GTSDisallowedClassicRibbon { get; init; } = "Cannot trade Classic Ribbon in the Gen 4 GTS between Korean and International games.";
+    public string GTSDisallowedTradedEgg { get; init; } = "Cannot trade eggs in the Gen 4 GTS between Korean and International games.";
+
     public string G5IVAll30 { get; init; } = "All IVs of N's Pokémon should be 30.";
     public string G5PIDShinyGrotto { get; init; } = "Hidden Grotto captures cannot be shiny.";
     public string G5SparkleInvalid { get; init; } = "Special In-game N's Sparkle flag should not be checked.";
@@ -215,7 +223,6 @@ public sealed class LegalityCheckLocalization
     public string GanbaruStatTooHigh { get; init; } = "One or more Ganbaru Value is above the natural limit of (10 - IV bonus).";
 
     public string GenderInvalidNone { get; init; } = "Genderless Pokémon should not have a gender.";
-    public string GeoBadOrder { get; init; } = "GeoLocation Memory: Gap/Blank present.";
     public string GeoHardwareInvalid { get; init; } = "Geolocation: Country is not in 3DS region.";
     public string GeoHardwareRange { get; init; } = "Invalid Console Region.";
     public string GeoHardwareValid { get; init; } = "Geolocation: Country is in 3DS region.";
@@ -290,6 +297,7 @@ public sealed class LegalityCheckLocalization
     public string MoveEvoFCombination_0 { get; init; } = "Moves combinations is not compatible with {0} evolution.";
     public string MoveFExpectSingle_0 { get; init; } = "Expected: {0}";
     public string MoveKeldeoMismatch { get; init; } = "Keldeo Move/Form mismatch.";
+    public string MovePPMatchesVirtualConsole { get; init; } = "Move PP exactly matches values from the 3DS Virtual Console transfer bug.";
     public string MovePPExpectHealed_01 { get; init; } = "Move {0} PP is below the amount expected ({1}).";
     public string MovePPTooHigh_01 { get; init; } = "Move {0} PP is above the amount allowed ({1}).";
     public string MovePPUpsTooHigh_01 { get; init; } = "Move {0} PP Ups is above the amount allowed ({1}).";
@@ -365,7 +373,7 @@ public sealed class LegalityCheckLocalization
     public string StatIncorrectCP { get; init; } = "Calculated CP does not match stored value.";
     public string StatGigantamaxInvalid { get; init; } = "Gigantamax Flag mismatch.";
     public string StatGigantamaxValid { get; init; } = "Gigantamax Flag was changed via Max Soup.";
-    public string StatNatureInvalid { get; init; } = "Stat Nature is not within the expected range.";
+    public string StatAlignmentInvalid { get; init; } = "Stat Alignment is not within the expected range.";
     public string StatBattleVersionInvalid { get; init; } = "Battle Version is not within the expected range.";
     public string StatNobleInvalid { get; init; } = "Noble Flag mismatch.";
     public string StatAlphaInvalid { get; init; } = "Alpha Flag mismatch.";
@@ -404,7 +412,6 @@ public sealed class LegalityCheckLocalization
     public string TransferHTMismatchName { get; init; } = "Handling trainer does not match the expected trainer name.";
     public string TransferHTMismatchGender { get; init; } = "Handling trainer does not match the expected trainer gender.";
     public string TransferHTMismatchLanguage { get; init; } = "Handling trainer does not match the expected trainer language.";
-    public string TransferKoreanGen4 { get; init; } = "Korean Generation 4 games cannot interact with International Generation 4 games.";
     public string TransferMet { get; init; } = "Invalid Met Location, expected Poké Transfer or Crown.";
     public string TransferNotPossible { get; init; } = "Unable to transfer into current format from origin format.";
     public string TransferMetLocation { get; init; } = "Invalid Transfer Met Location.";

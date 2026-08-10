@@ -91,7 +91,7 @@ public static class GenerateMethodK
                     if (filterIVs && !criteria.IsSatisfiedIVs(iv32))
                         continue;
 
-                    if (enc.Type is SlotType4.BugContest && !MethodK.IsAny31(iv32) && !MethodK.IsAny31(iv32 >> 16))
+                    if (enc.IsRerollMinimum31 && !MethodK.IsAny31(iv32) && !MethodK.IsAny31(iv32 >> 15))
                         break; // try again
 
                     pk.PID = pid;
@@ -126,7 +126,7 @@ public static class GenerateMethodK
                 var a = LCRNG.Next16(ref s);
                 var b = LCRNG.Next16(ref s);
                 var pid = GetPIDRegular(a, b);
-                if (criteria.IsSpecifiedNature() && !criteria.IsSatisfiedNature((Nature)(pid % 25)))
+                if (criteria.IsSpecifiedNature() && !criteria.IsSatisfiedNature(pid))
                     continue;
 
                 var gender = EntityGender.GetFromPIDAndRatio(pid, gr);

@@ -107,6 +107,10 @@ public partial class Main : Form
         dragout.ContextMenuStrip = mnu.mnuL;
         C_SAV.menu.RequestEditorLegality = DisplayLegalityReport;
         components.Add(mnu);
+
+        // Add translatable extra menu controls.
+        Menu_Tools.DropDownItems.Add(new ToolStripSeparator());
+        Troubleshooting.AddTroubleshootingControls(Menu_Tools, Plugins, true);
     }
 
     public void LoadInitialFiles(StartupArguments args)
@@ -166,16 +170,15 @@ public partial class Main : Form
         var settings = Settings;
         Draw = C_SAV.M.Hover.Draw = PKME_Tabs.Draw = settings.Draw;
         ReloadProgramSettings(settings, true);
-        CB_MainLanguage.Items.AddRange(Enum.GetNames<ProgramLanguage>());
         PB_Legal.Visible = !HaX;
         C_SAV.HaX = PKME_Tabs.HaX = HaX;
-
 #if DEBUG
         DevUtil.AddDeveloperControls(Menu_Tools, Plugins);
 #endif
 
         // Select Language
-        CB_MainLanguage.SelectedIndex = GameLanguage.GetLanguageIndex(settings.Startup.Language);
+        AddLanguageMenuItems();
+        ApplyMainLanguage(GameLanguage.GetLanguageIndex(settings.Startup.Language));
 
         if (Application.IsDarkModeEnabled)
             WinFormsUtil.InvertToolStripIcons(menuStrip1.Items);
@@ -724,7 +727,7 @@ public partial class Main : Form
             EReaderBerrySettings.LoadFrom(sav3);
     }
 
-    private bool OpenSAV(SaveFile sav, string path)
+    internal bool OpenSAV(SaveFile sav, string path, bool forceOpen = false)
     {
         if (ModifierKeys == Keys.Alt)
         {
@@ -732,7 +735,7 @@ public partial class Main : Form
             if (SaveUtil.TryOverride(sav, other, out var replace))
                 sav = replace;
         }
-        if (!sav.IsVersionValid())
+        if (!sav.IsVersionValid() && !forceOpen)
         {
             WinFormsUtil.Error(MsgFileLoadSaveLoadFail, path);
             return true;
@@ -835,9 +838,11 @@ public partial class Main : Form
 
     private static string GetProgramTitle(SaveFile sav)
     {
-        string title = GetProgramTitle() + $" - {sav.GetType().Name}: ";
+        var type = sav.GetType().Name;
         if (sav is ISaveFileRevision rev)
-            title = title.Insert(title.Length - 2, rev.SaveRevisionString);
+            type += rev.SaveRevisionString;
+
+        var title = GetProgramTitle() + $" - {type}: ";
         var version = GameInfo.GetVersionName(sav.Version);
         if (Settings.Privacy.HideSAVDetails)
             return title + $"[{version}]";
@@ -962,13 +967,40 @@ public partial class Main : Form
     }
 
     // Language Translation
-    private void ChangeMainLanguage(object sender, EventArgs e)
+    private void AddLanguageMenuItems()
     {
-        var index = CB_MainLanguage.SelectedIndex;
-        if ((uint)index < CB_MainLanguage.Items.Count)
+        Menu_Language.DropDownItems.Clear();
+        var names = Enum.GetNames<ProgramLanguage>();
+        for (int i = 0; i < names.Length; i++)
+        {
+            var item = new ToolStripMenuItem(names[i])
+            {
+                Name = names[i],
+                Tag = i,
+                CheckOnClick = false,
+            };
+            item.Click += ChangeMainLanguage;
+            Menu_Language.DropDownItems.Add(item);
+        }
+        UpdateLanguageMenuChecks(GameLanguage.GetLanguageIndex(CurrentLanguage));
+    }
+
+    private void ChangeMainLanguage(object? sender, EventArgs e)
+    {
+        var index = sender is ToolStripMenuItem { Tag: int menuIndex }
+            ? menuIndex
+            : GameLanguage.GetLanguageIndex(CurrentLanguage);
+        ApplyMainLanguage(index);
+    }
+
+    private void ApplyMainLanguage(int index)
+    {
+        if ((uint)index < GameLanguage.LanguageCount)
             CurrentLanguage = GameLanguage.LanguageCode(index);
 
         var lang = CurrentLanguage;
+        UpdateLanguageMenuChecks(index);
+
         Settings.Startup.Language = lang;
         WinFormsUtil.SetCultureLanguage(lang);
 
@@ -994,6 +1026,12 @@ public partial class Main : Form
 
         foreach (var plugin in Plugins)
             plugin.NotifyDisplayLanguageChanged(lang);
+    }
+
+    private void UpdateLanguageMenuChecks(int index)
+    {
+        foreach (ToolStripMenuItem item in Menu_Language.DropDownItems)
+            item.Checked = item.Tag is int itemIndex && itemIndex == index;
     }
     #endregion
 
@@ -1145,7 +1183,7 @@ public partial class Main : Form
     {
         if (!PKME_Tabs.EditsComplete)
             return; // don't copy garbage to the box
-        PKM pk = PKME_Tabs.PreparePKM();
+        var pk = PKME_Tabs.PreparePKM();
         C_SAV.SetClonesToBox(pk);
     }
 
@@ -1240,17 +1278,17 @@ public partial class Main : Form
                 pk.WriteEncryptedDataParty(data);
 
             // Create Temp File to Drag
-            var newfile = FileUtil.GetPKMTempFileName(pk, encrypt);
+            var newFile = FileUtil.GetPKMTempFileName(pk, encrypt);
             try
             {
-                await File.WriteAllBytesAsync(newfile, data).ConfigureAwait(true);
+                await File.WriteAllBytesAsync(newFile, data).ConfigureAwait(true);
 
                 mainDragOutActive = true;
                 var pb = (PictureBox)sender;
                 if (pb.Image is Bitmap img)
                     C_SAV.M.Drag.SetOwnedCursor(pb, img);
 
-                DoDragDrop(new DataObject(DataFormats.FileDrop, new[] { newfile }), DragDropEffects.Copy);
+                DoDragDrop(new DataObject(DataFormats.FileDrop, new[] { newFile }), DragDropEffects.Copy);
             }
             // Tons of things can happen with drag & drop; don't try to handle things, just indicate failure.
             catch (Exception x)
@@ -1259,7 +1297,7 @@ public partial class Main : Form
             {
                 mainDragOutActive = false;
                 C_SAV.M.Drag.ResetCursor(this);
-                await DeleteAsync(newfile, 20_000).ConfigureAwait(false);
+                await DeleteAsync(newFile, 20_000).ConfigureAwait(false);
             }
             PKME_Tabs.NotifyWasExported(preModify); // restore pre-modify state, in case the user drags into the same program window
         }

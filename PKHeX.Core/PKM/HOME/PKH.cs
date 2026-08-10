@@ -106,7 +106,7 @@ public sealed class PKH : PKM, IHandlerLanguage, IFormArgument, IHomeTrack, IBat
     public ushort MarkingValue { get => Core.MarkingValue; set => Core.MarkingValue = value; }
     public override uint PID { get => Core.PID; set => Core.PID = value; }
     public override Nature Nature { get => Core.Nature; set => Core.Nature = value; }
-    public override Nature StatNature { get => Core.StatNature; set => Core.StatNature = value; }
+    public override Nature StatAlignment { get => Core.StatAlignment; set => Core.StatAlignment = value; }
     public override bool FatefulEncounter { get => Core.FatefulEncounter; set => Core.FatefulEncounter = value; }
     public override byte Gender { get => Core.Gender; set => Core.Gender = value; }
     public override byte Form { get => Core.Form; set => Core.Form = value; }
@@ -508,7 +508,7 @@ public sealed class PKH : PKM, IHandlerLanguage, IFormArgument, IHomeTrack, IBat
         // Does not check Language or Version for equality! Can result in mismatches or empty (0) language value.
         // Check the trainer string for equality (most expensive of all last).
 
-        Span<char> exist = stackalloc char[pk.TrashCharCountTrainer];
+        Span<char> exist = stackalloc char[pk.TrashCharCountHandler];
         var len = pk.LoadString(pk.HandlingTrainerTrash, exist);
         exist = exist[..len];
 

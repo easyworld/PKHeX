@@ -70,6 +70,7 @@ public enum LegalityCheckResultCode : ushort
     EggLocationTrade,
     EggLocationTradeFail,
     EggMetLocationFail,
+    EggMoveCombination,
     EggNature,
     EggPP,
     EggPPUp,
@@ -199,6 +200,13 @@ public enum LegalityCheckResultCode : ushort
     GeoMemoryMissing,
     GeoNoCountryHT,
 
+    // GTS
+    GTSTrainerSanitized, // valid, tag
+    GTSTradedKoreanInternational, // valid
+    GTSTrainerSanitizedExpected,
+    GTSDisallowedClassicRibbon,
+    GTSDisallowedTradedEgg,
+
     // Hints
 
     // Hyper Training
@@ -247,6 +255,7 @@ public enum LegalityCheckResultCode : ushort
     // Moves - General
     MoveKeldeoMismatch,
     MovesShouldMatchRelearnMoves,
+    MovePPMatchesVirtualConsole,
 
     // Moves - Shop & Alpha
     MoveShopAlphaMoveShouldBeOther,
@@ -304,7 +313,7 @@ public enum LegalityCheckResultCode : ushort
     StatInvalidHeightWeight,
     StatGigantamaxInvalid,
     StatGigantamaxValid,
-    StatNatureInvalid,
+    StatAlignmentInvalid,
     StatBattleVersionInvalid,
     StatNobleInvalid,
     StatAlphaInvalid,
@@ -350,7 +359,6 @@ public enum LegalityCheckResultCode : ushort
     TransferMetLocation,
     TransferNature,
     TransferObedienceLevel,
-    TransferKoreanGen4,
     TransferEncryptGen6BitFlip,
     TransferEncryptGen6Equals,
     TransferEncryptGen6Xor,
@@ -465,6 +473,7 @@ public enum LegalityCheckResultCode : ushort
     // One/Two Arguments: Special
     FirstComplex,
     RibbonsInvalid_0 = FirstComplex, // generated string
+    EggBreedChain_0, // generated string
     WordFilterFlaggedPattern_01, // filter, pattern
     WordFilterInvalidCharacter_0, // filter, pattern
 
